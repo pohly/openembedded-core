@@ -76,6 +76,8 @@ class Configuration(object):
             self.parser.readfp(f)
 
         self.repos = {}
+        self.signoff = not self.parser.has_option('DEFAULT', 'signoff') or \
+                       self.parser.getboolean('DEFAULT', 'signoff')
         for repo in self.parser.sections():
             self.repos[repo] = {}
             readsection(self.parser, repo, repo)
@@ -482,7 +484,7 @@ def apply_patchlist(conf, repos):
                 if os.path.getsize(patchfile) == 0:
                     logger.info("(skipping %d/%d %s - no changes)" % (i, linecount, patchdisp))
                 else:
-                    cmd = "git am --keep-cr -s -p1 %s" % patchfile
+                    cmd = "git am --keep-cr %s-p1 %s" % ('-s ' if conf.signoff else '', patchfile)
                     logger.info("Applying %d/%d: %s" % (i, linecount, patchdisp))
                     try:
                         runcmd(cmd)

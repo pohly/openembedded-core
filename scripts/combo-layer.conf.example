@@ -1,5 +1,11 @@
 # combo-layer example configuration file
 
+# global options
+[DEFAULT]
+
+# Add 'Signed-off-by' to all commits that get imported automatically.
+signoff = True
+
 # component name
 [bitbake]
 # mandatory options
