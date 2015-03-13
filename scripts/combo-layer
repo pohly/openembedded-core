@@ -655,7 +655,8 @@ def action_update(conf, args):
                     os.rename(filtered, patch)
                 else:
                     # Empty, ignore it. Must also remove from revlist.
-                    fromline = open(patch, 'r').readline()
+                    with open(patch, 'r') as f:
+                        fromline = f.readline()
                     m = re.match(r'''^From ([0-9a-fA-F]+) .*\n''', fromline)
                     rev = m.group(1)
                     logger.debug('skipping empty patch %s = %s' % (patch, rev))
