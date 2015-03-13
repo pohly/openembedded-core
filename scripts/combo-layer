@@ -70,6 +70,11 @@ class Configuration(object):
                 if value.startswith("@"):
                     self.repos[repo][name] = eval(value.strip("@"))
                 else:
+                    # Apply special type transformations for some properties.
+                    # Type matches the RawConfigParser.get*() methods.
+                    types = {'signoff': 'boolean'}
+                    if name in types:
+                        value = getattr(parser, 'get' + types[name])(section, name)
                     self.repos[repo][name] = value
 
         logger.debug("Loading config file %s" % self.conffile)
@@ -78,8 +83,6 @@ class Configuration(object):
             self.parser.readfp(f)
 
         self.repos = {}
-        self.signoff = not self.parser.has_option('DEFAULT', 'signoff') or \
-                       self.parser.getboolean('DEFAULT', 'signoff')
         for repo in self.parser.sections():
             self.repos[repo] = {}
             readsection(self.parser, repo, repo)
@@ -726,7 +729,7 @@ def apply_patchlist(conf, repos):
                 if os.path.getsize(patchfile) == 0:
                     logger.info("(skipping %d/%d %s - no changes)" % (i, linecount, patchdisp))
                 else:
-                    cmd = "git am --keep-cr %s-p1 %s" % ('-s ' if conf.signoff else '', patchfile)
+                    cmd = "git am --keep-cr %s-p1 %s" % ('-s ' if repo.get('signoff', True) else '', patchfile)
                     logger.info("Applying %d/%d: %s" % (i, linecount, patchdisp))
                     try:
                         runcmd(cmd)
