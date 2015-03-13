@@ -643,7 +643,7 @@ def action_update(conf, args):
             filter = ['filterdiff', '-p1']
             for path in exclude.split():
                 filter.append('-x')
-                filter.append(path)
+                filter.append('%s/%s' % (dest_dir, path) if dest_dir else path)
             for patch in patchlist[:]:
                 filtered = patch + '.tmp'
                 with open(filtered, 'w') as f:
