@@ -1,0 +1,131 @@
+#!/bin/sh
+#
+# Corresponds to and derived from initramfs-live-boot's "live" init-live.
+#
+# It will wait until a (potentially removable) disk with
+# a "rootfs.img" file on it shows up, then loop-mount that
+# file as rootfs.
+#
+# Relies on "udev" or "mdev" having run already.
+#
+# To skip this module in an initramfs which needs to support live
+# images as well as regular partitions, boot with "root" kernel
+# parameter set to something other than /dev/ram0 (the value set
+# by image-live.bbclass for SYSLINUX_ROOT, which then becomes the root
+# kernel parameter).
+
+LIVE_ROOT_IMAGE="rootfs.img"
+LIVE_ISOLINUX=""
+LIVE_ROOT_DISK=""
+LIVE_FAILURE_TIMEOUT=5
+
+live_enabled() {
+    if [ -n "$bootparam_root" ] && [ "$bootparam_root" != "/dev/ram0" ]; then
+        return 1
+    fi
+}
+
+live_run() {
+    if [ -n "$ROOTFS_DIR" ]; then
+	msg "Waiting for removable media..."
+        C=0
+        while true
+        do
+            for i in `ls /run/media 2>/dev/null`; do
+                if [ -f /run/media/$i/$LIVE_ROOT_IMAGE ] ; then
+		    found="yes"
+		    LIVE_ROOT_DISK="$i"
+		    break
+	        elif [ -f /run/media/$i/isolinux/$LIVE_ROOT_IMAGE ]; then
+		    found="yes"
+		    LIVE_ISOLINUX="isolinux"
+		    LIVE_ROOT_DISK="$i"
+		    break
+                fi
+            done
+            if [ "$found" = "yes" ]; then
+                break;
+            fi
+            # don't wait for more than "shelltimeout" seconds, if it's set
+            if [ -n "$bootparam_shelltimeout" ]; then
+                msg -n " " $(( $bootparam_shelltimeout - $C ))
+                if [ $C -ge $bootparam_shelltimeout ]; then
+                    msg "..."
+	            msg "Mounted filesystems"
+                    mount | grep media
+                    msg "Available block devices"
+                    cat /proc/partitions
+                    msg "Cannot find $LIVE_ROOT_IMAGE file in /run/media/* , giving up booting live image in $LIVE_FAILURE_TIMEOUT seconds"
+                    # Sleep a bit because continuing to boot may
+                    # generate further output that pushes the
+                    # important message of the screen. init-live
+                    # starts a shell at this point (hence the
+                    # parameter name). With initramfs-framework, use
+                    # shell=after:live to achieve something similar.
+                    sleep $LIVE_FAILURE_TIMEOUT
+                    break
+                fi
+                C=$(( C + 1 ))
+            fi
+            sleep 1
+        done
+
+        if [ "$found" = "yes" ]; then
+            mknod /dev/loop0 b 7 0 2>/dev/null
+
+            if ! mount -o rw,loop,noatime,nodiratime /run/media/$LIVE_ROOT_DISK/$LIVE_ISOLINUX/$LIVE_ROOT_IMAGE $ROOTFS_DIR ; then
+	        fatal "Could not mount rootfs image"
+            fi
+
+            if touch $ROOTFS_DIR/bin 2>/dev/null; then
+	        # The root image is read-write, directly boot it up.
+	        return
+            fi
+
+            # determine which unification filesystem to use
+            union_fs_type=""
+            if grep -q -w "overlayfs" /proc/filesystems; then
+	        union_fs_type="overlayfs"
+            elif grep -q -w "aufs" /proc/filesystems; then
+	        union_fs_type="aufs"
+            else
+	        union_fs_type=""
+            fi
+
+            # make a union mount if possible
+            case $union_fs_type in
+	        "overlayfs")
+	            mkdir -p /rootfs.ro /rootfs.rw
+	            if ! mount -n --move $ROOTFS_DIR /rootfs.ro; then
+		        rm -rf /rootfs.ro /rootfs.rw
+		        fatal "Could not move rootfs mount point"
+	            else
+		        mount -t tmpfs -o rw,noatime,mode=755 tmpfs /rootfs.rw
+		        mount -t overlayfs -o "lowerdir=/rootfs.ro,upperdir=/rootfs.rw" overlayfs $ROOTFS_DIR
+		        mkdir -p $ROOTFS_DIR/rootfs.ro $ROOTFS_DIR/rootfs.rw
+		        mount --move /rootfs.ro $ROOTFS_DIR/rootfs.ro
+		        mount --move /rootfs.rw $ROOTFS_DIR/rootfs.rw
+	            fi
+	            ;;
+	        "aufs")
+	            mkdir -p /rootfs.ro /rootfs.rw
+	            if ! mount -n --move $ROOTFS_DIR /rootfs.ro; then
+		        rm -rf /rootfs.ro /rootfs.rw
+		        fatal "Could not move rootfs mount point"
+	            else
+		        mount -t tmpfs -o rw,noatime,mode=755 tmpfs /rootfs.rw
+		        mount -t aufs -o "dirs=/rootfs.rw=rw:/rootfs.ro=ro" aufs $ROOTFS_DIR
+		        mkdir -p $ROOTFS_DIR/rootfs.ro $ROOTFS_DIR/rootfs.rw
+		        mount --move /rootfs.ro $ROOTFS_DIR/rootfs.ro
+		        mount --move /rootfs.rw $ROOTFS_DIR/rootfs.rw
+	            fi
+	            ;;
+	        "")
+	            mount -t tmpfs -o rw,noatime,mode=755 tmpfs $ROOTFS_DIR/media
+	            ;;
+            esac
+        fi
+    else
+	debug "No rootfs has been set"
+    fi
+}

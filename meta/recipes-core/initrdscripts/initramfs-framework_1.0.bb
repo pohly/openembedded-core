@@ -12,6 +12,7 @@ SRC_URI = "file://init \
            file://mdev \
            file://udev \
            file://e2fs \
+           file://live \
            file://debug"
 
 S = "${WORKDIR}"
@@ -32,6 +33,9 @@ do_install() {
     # e2fs
     install -m 0755 ${WORKDIR}/e2fs ${D}/init.d/10-e2fs
 
+    # live image booting
+    install -m 0755 ${WORKDIR}/live ${D}/init.d/15-live
+
     # debug
     install -m 0755 ${WORKDIR}/debug ${D}/init.d/00-debug
 
@@ -45,6 +49,7 @@ PACKAGES = "${PN}-base \
             initramfs-module-mdev \
             initramfs-module-udev \
             initramfs-module-e2fs \
+            initramfs-module-live \
             initramfs-module-debug"
 
 FILES_${PN}-base = "/init /init.d/99-finish /dev"
@@ -60,6 +65,10 @@ FILES_initramfs-module-udev = "/init.d/01-udev"
 SUMMARY_initramfs-module-e2fs = "initramfs support for ext4/ext3/ext2 filesystems"
 RDEPENDS_initramfs-module-e2fs = "${PN}-base"
 FILES_initramfs-module-e2fs = "/init.d/10-e2fs"
+
+SUMMARY_initramfs-module-live = "initramfs live image support"
+RDEPENDS_initramfs-module-live = "${PN}-base"
+FILES_initramfs-module-live = "/init.d/15-live"
 
 SUMMARY_initramfs-module-debug = "initramfs dynamic debug support"
 RDEPENDS_initramfs-module-debug = "${PN}-base"
