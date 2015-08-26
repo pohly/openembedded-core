@@ -14,6 +14,13 @@
 # 'foo=value' as 'bootparam_foo=value'
 # 'foo' as 'bootparam_foo=true'
 # 'foo.bar[=value] as 'foo_bar=[value|true]'
+#
+# Special boot parameters always recognized by initramfs-framework (see modules
+# like "debug" for additional ones):
+# debug: enable debug logging (beware, also enables debug output in other system components)
+# verbose: similar do debug, just less output
+# init_verbose[=true|1|2]: same output as for verbose when no value or true/1 are given,
+#                          same as debug for 2 - only affects logging in initramfs-framework
 
 # Register a function to be called before running a module
 # The hook is called as:
@@ -45,12 +52,12 @@ msg() {
 
 # Prints information if verbose bootparam is used
 info() {
-	[ -n "$bootparam_verbose" ] && echo "$@" >/dev/console
+	( [ -n "$bootparam_verbose" ] || [ "${bootparam_init_verbose:-0}" -gt 0 ] ) && echo "$@" >/dev/console
 }
 
 # Prints information if debug bootparam is used
 debug() {
-	[ -n "$bootparam_debug" ] && echo "DEBUG: $@" >/dev/console
+	( [ -n "$bootparam_debug" ] || [ "${bootparam_init_verbose:-0}" -gt 1 ] ) && echo "DEBUG: $@" >/dev/console
 }
 
 # Prints a message and start a endless loop
@@ -88,6 +95,11 @@ for p in `cat /proc/cmdline`; do
 		eval "bootparam_${opt}=\"${value}\""
 	fi
 done
+
+# Simplify log level check in debug() and info().
+if [ "x$bootparam_init_verbose" = "xtrue" ]; then
+	bootparam_init_verbose=1
+fi
 
 # use /dev with devtmpfs
 if grep -q devtmpfs /proc/filesystems; then
