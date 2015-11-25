@@ -4,6 +4,8 @@
 # Copyright (C) 2015 Intel Corporation
 # Licensed under the MIT license
 
+inherit buildhistory
+
 BUILDHISTORY_EXTRA_PKGVARS ?= "PACKAGECONFIG EXTRA_OEMAKE EXTRA_OECONF EXTRA_OECMAKE EXTRA_OESCONS EXTRA_QMAKEVARS_PRE EXTRA_QMAKEVARS_POST OE_FEATURES SUMMARY DESCRIPTION HOMEPAGE LICENSE"
 
 python buildhistory_emit_pkghistory_append() {
