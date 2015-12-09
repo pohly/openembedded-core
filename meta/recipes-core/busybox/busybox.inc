@@ -331,7 +331,8 @@ python do_package_prepend () {
     dvar = d.getVar('D', True)
     pn = d.getVar('PN', True)
     def set_alternative_vars(links, target):
-        f = open('%s%s' % (dvar, links), 'r')
+        target_exists = os.path.exists('%s%s' % (dvar, target))
+        f = open(links, 'r')
         for alt_link_name in f:
             alt_link_name = alt_link_name.strip()
             alt_name = os.path.basename(alt_link_name)
@@ -340,16 +341,17 @@ python do_package_prepend () {
                 alt_name = 'lbracket'
             d.appendVar('ALTERNATIVE_%s' % (pn), ' ' + alt_name)
             d.setVarFlag('ALTERNATIVE_LINK_NAME', alt_name, alt_link_name)
-            if os.path.exists('%s%s' % (dvar, target)):
+            if target_exists:
                 d.setVarFlag('ALTERNATIVE_TARGET', alt_name, target)
         f.close()
         return
 
-    if os.path.exists('%s/etc/busybox.links' % (dvar)):
-        set_alternative_vars("${sysconfdir}/busybox.links", "${base_bindir}/busybox")
-    else:
-        set_alternative_vars("${sysconfdir}/busybox.links.nosuid", "${base_bindir}/busybox.nosuid")
-        set_alternative_vars("${sysconfdir}/busybox.links.suid", "${base_bindir}/busybox.suid")
+    import glob
+    base = dvar + "${sysconfdir}/busybox.links"
+    for links in glob.glob(base + "*"):
+        # Suffix might be empty when there is no split between busybox.suid and busybox.nosuid.
+        suffix = links[len(base):]
+        set_alternative_vars(links, "${base_bindir}/busybox" + suffix)
 }
 
 pkg_postinst_${PN} () {
