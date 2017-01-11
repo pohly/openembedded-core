@@ -1,0 +1,44 @@
+improve LIC_FILES_CHKSUM QA check
+
+In YOCTO #10898 I pointed out that the documentation for
+LIC_FILES_CHKSUM beginline and endline does not specify whether
+the numbering starts at 0 or 1 (it's 1) and whether the endline
+is inclusive or exclusive (it's inclusive), and I offered the bet
+that developers happened to use values that are off by one.
+
+I also showed how to extract the right lines from a file with
+tail and head and calculate the md5sum. Paul argued that this
+isn't necessary: one could just pick some lines, trigger the QA
+error message, and then use the md5sum from that message.
+
+But when doing that, developers will not notice when they pick
+the wrong lines. Therefore I'd like to propose the following
+patch which adds the selected license text directly to the error
+message. That's also useful when the text changes, because then
+developers have the change right in front of them, without having
+to look it up in the file manually.
+
+Just for the sake of closure (and so that I win my bet ;-), here's an
+example which is probably an off-by-one error (there's no reason
+to include the "#ifndef cmake_h"):
+
+meta/recipes-devtools/cmake/cmake_3.7.1.bb:
+LIC_FILES_CHKSUM = "file://Copyright.txt;md5=7a64bc564202bf7401d9a8ef33c9564d \
+                    file://Source/cmake.h;beginline=1;endline=3;md5=4494dee184212fc89c469c3acd555a14"
+
+vvvvvvvvvvvvvvvvvvvvvvvvvvvv beginline=1 vvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+/* Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
+   file Copyright.txt or https://cmake.org/licensing for details.  */
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ endline=3 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+I also found examples where endline was used without beginline,
+leading to snippets that included the copyright line and thus
+leading to more churn when upstream developers bump the copyright
+year without actually changing the license.
+
+I'm not going to propose patches for those recipes: including the
+copyright years can be fixed as part of the next update that
+requires changing the checksum, and the off-by-one problems
+probably aren't that relevant (although I can also imagine cases
+where a one-line license comment was meant to be picked and was
+missed entirely).
