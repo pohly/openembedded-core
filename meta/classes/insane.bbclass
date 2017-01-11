@@ -765,6 +765,12 @@ python populate_lic_qa_checksum() {
             license = b''.join(license)
             os.unlink(tmplicfile)
 
+        path = '/tmp/licenses/' + pn
+        bb.utils.mkdirhier(path)
+        path = path + '/' + url.translate(str.maketrans(':/&', '___'))
+        with open(path, 'wb') as f:
+            f.write(license)
+
         if recipemd5 == md5chksum:
             bb.note (pn + ": md5 checksum matched for ", url)
         else:
