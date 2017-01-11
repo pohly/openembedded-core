@@ -1,0 +1,46 @@
+UEFI + Secure Boot + qemu
+
+There seems to be a consensus that supporting UEFI in OE-core for qemu
+would be valuable, and there have been some (stalled) attempts to add
+it. For reference, see:
+   [OE-core] [PATCH V3 0/3] Add UEFI firmware for qemux86*
+   [OE-core] Add ovmf-native to make qemu-native/runqemu support boot UEFI image?
+   https://bugzilla.yoctoproject.org/show_bug.cgi?id=5654
+   https://github.com/01org/luv-yocto/issues/38
+
+This patch set includes the necessary recipes (ovmf from meta-luv, acpica from
+meta-oe), some improvements to them (in particular, enabling Secure
+Boot), and changes to runqemu to make it easier to boot with UEFI. A
+special image recipes builds an image which can be used to lock down a
+virtual machine by enrolling the "normal" pre-installed certificates.
+
+In contrast to the first version of this patch series, one can now use
+both a single OVMF firmware file as well as set up persistent
+variables for a virtual machine by using two files.
+
+Eduardo promised to add automated testing for this once it is in OE-core.
+As it stands now, ovmf-shell-image and ovmf without Secure Boot enabled
+should at least be part of a world build.
+
+As discussed on this list, Ricardo and Fathi volunteered to help with
+maintaining the ovmf and acpica recipes in OE-core.
+
+Beware that "git am --keep-cr" must be used to import the ovmf patches
+correctly.
+
+Changes since V1:
+- support both combined code+vars ("ovmf") and separate code
+  and vars flash drives ("ovmf.code ovmf.vars")
+- OVMF firmware no longer installed in the target sysroot
+- slightly simpler renaming from OVMF (uppercase, underscore)
+  to OE naming convention (lowercase, dots): now the different
+  ln invocation directly create files with the final name
+- DEPLOYDIR needs to be cleaned explicitly (done via cleandirs varflag)
+- Secure Boot support in ovmf is controlled by a PACKAGECONFIG option,
+  off by default
+- distros and developers can add additional Secure Boot compile flags
+  with OVMF_SECURE_BOOT_EXTRA_FLAGS
+- explain how to get ovmf built for use with runqemu via MACHINE_ESSENTIAL_EXTRA_RDEPENDS
+- IMAGE_FSTYPES_forcevariable = "wic" used in ovmf-shell-image
+- remove OVMF BGRT patch
+- location of "inherit deploy"
