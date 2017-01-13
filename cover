@@ -1,0 +1,5 @@
+rm_work enhancements
+
+This is the OE-core side of the rm_work.bbclass enhancements. Depends
+on the corresponding bitbake patch series. See the OE-core "rm_work +
+pybootchart enhancements" mail thread for further information.
