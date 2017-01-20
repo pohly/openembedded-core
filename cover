@@ -44,3 +44,7 @@ Changes since V1:
 - IMAGE_FSTYPES_forcevariable = "wic" used in ovmf-shell-image
 - remove OVMF BGRT patch
 - location of "inherit deploy"
+
+Changes since V2:
+- rebased onto current master
+- workaround for acpica compile issue with flex 2.6.2
