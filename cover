@@ -48,3 +48,7 @@ Changes since V1:
 Changes since V2:
 - rebased onto current master
 - workaround for acpica compile issue with flex 2.6.2
+
+Changes since V3:
+- rebased onto current master (for real, this time!)
+- reordered patches a bit
