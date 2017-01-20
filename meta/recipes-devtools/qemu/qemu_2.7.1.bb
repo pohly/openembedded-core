@@ -11,6 +11,10 @@ SRC_URI += "file://configure-fix-Darwin-target-detection.patch \
             file://qemu-2.5.0-cflags.patch \
             file://0003-fix-CVE-2016-7908.patch \
             file://0004-fix-CVE-2016-7909.patch \
+            file://0001-Provide-support-for-the-CUSE-TPM.patch \
+            file://0002-Introduce-condition-to-notify-waiters-of-completed-c.patch \
+            file://0003-Introduce-condition-in-TPM-backend-for-notification.patch \
+            file://0004-Add-support-for-VM-suspend-resume-for-TPM-TIS.patch \
 "
 
 SRC_URI =+ "http://wiki.qemu-project.org/download/${BP}.tar.bz2"
