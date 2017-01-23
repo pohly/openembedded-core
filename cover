@@ -1,0 +1,5 @@
+enable swtpm-native
+
+swtpm (from meta-security) can be compiled for the host and then be
+used to provide a virtual TPM device in qemu. However, it depends on
+the native flavor of some recipes in OE-core.
