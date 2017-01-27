@@ -52,3 +52,7 @@ Changes since V2:
 Changes since V3:
 - rebased onto current master (for real, this time!)
 - reordered patches a bit
+
+Changes since V4:
+- revised the commit message of "ovmf: deploy firmware in image directory"
+  to clarify expected usage
