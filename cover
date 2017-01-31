@@ -1,0 +1,6 @@
+verify-bashisms: fix script and one issue found by it
+
+The script broke when introducing tinfoil2. The patches also include
+several usability enhancements, like making the output less redundant
+and including information about the actual file and line where the
+offending script can be found.
