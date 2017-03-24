@@ -14,5 +14,5 @@ There were several problems doing that:
 - booting with only the non-standard internal disk instead of the
   recipe's image was not possible
 
-This patch series probably conflicts with the patches that Robert posted.
-If those are meant to go in first, then I'll post a rebased V2.
+V2: rebased on top of master-next + Robert's "runqemu: add selftest" series,
+    no other changes (merge V1 if not taking Robert's patches first)
