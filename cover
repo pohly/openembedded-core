@@ -1,0 +1,18 @@
+oeqa: more control over qemu
+
+I'm currently working on testing an installer image. During that test
+I need to:
+- boot with two drives attached to the virtual machine (installer image
+  and internal disk)
+- install to internal disk
+- reboot with just the internal disk
+
+There were several problems doing that:
+- attaching second disk via qemuparams was not possible
+- run_serial() timed out too early during the long-running install command
+- writes to the internal disks were discarded
+- booting with only the non-standard internal disk instead of the
+  recipe's image was not possible
+
+This patch series probably conflicts with the patches that Robert posted.
+If those are meant to go in first, then I'll post a rebased V2.
