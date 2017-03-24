@@ -176,8 +176,8 @@ class QemuTarget(BaseTarget):
         bb.note("Qemu log file: %s" % self.qemulog)
         super(QemuTarget, self).deploy()
 
-    def start(self, params=None, ssh=True, extra_bootparams=None, runqemuparams=''):
-        if self.runner.start(params, get_ip=ssh, extra_bootparams=extra_bootparams, runqemuparams=runqemuparams):
+    def start(self, params=None, ssh=True, extra_bootparams=None, runqemuparams='', discard_writes=True):
+        if self.runner.start(params, get_ip=ssh, extra_bootparams=extra_bootparams, runqemuparams=runqemuparams, discard_writes=discard_writes):
             if ssh:
                 self.ip = self.runner.ip
                 self.server_ip = self.runner.server_ip
