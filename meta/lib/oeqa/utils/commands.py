@@ -218,7 +218,7 @@ def create_temp_layer(templayerdir, templayername, priority=999, recipepathspec=
 
 
 @contextlib.contextmanager
-def runqemu(pn, ssh=True, runqemuparams='', image_fstype=None, qemuparams=None):
+def runqemu(pn, ssh=True, runqemuparams='', image_fstype=None, qemuparams=None, overrides={}):
 
     import bb.tinfoil
     import bb.build
@@ -231,6 +231,8 @@ def runqemu(pn, ssh=True, runqemuparams='', image_fstype=None, qemuparams=None):
         tinfoil.config_data.setVar("TEST_LOG_DIR", "${WORKDIR}/testimage")
         tinfoil.config_data.setVar("TEST_QEMUBOOT_TIMEOUT", "1000")
         recipedata = tinfoil.parse_recipe(pn)
+        for key, value in overrides.items():
+            recipedata.setVar(key, value)
 
         # The QemuRunner log is saved out, but we need to ensure it is at the right
         # log level (and then ensure that since it's a child of the BitBake logger,
