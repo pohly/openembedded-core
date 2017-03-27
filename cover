@@ -1,0 +1,5 @@
+oeqa: runqemu enhancements
+
+Just something that I happened to notice when using oe-selftest a bit
+more... Both patches are non-essential enhancements and thus can wait
+until after 2.4.
