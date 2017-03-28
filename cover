@@ -18,3 +18,4 @@ V2: rebased on top of master-next + Robert's "runqemu: add selftest" series,
     no other changes (merge V1 if not taking Robert's patches first)
 V3: rebased on top of current master
 V4: QemuTinyRunner.start() also needs to accept the new "discard_writes" parameter
+V5: discard_writes must not be passed to launch()
