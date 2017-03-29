@@ -1,0 +1,20 @@
+eSDK: enhance compatibility with rm_work
+
+Currently "-c populate_sdk_ext" enables do_rm_work and then fails when
+that runs first. This is simular to the problem discussed with Mike
+Crowe: additional tasks that are only meant to run when explicitly
+requested by the user cannot be ordered to run before do_rm_work
+without also making them part of normal builds.
+
+IMHO this has always been a problem, injecting do_rm_work before
+do_build just triggers it more often.
+
+There's no good solution besides avoiding do_rm_work, which is what
+the two following patches do. The more reliable solution would be to
+have additional ordering dependencies between tasks than the current
+"A must run before B".
+
+I also considered solving this in the task scheduler, but I believe
+that this wouldn't work because even if it schedules populate_sdk_ext
+before rm_work, it wouldn't be able to prevent rm_work from running in
+parallel to populate_sdk_ext.
