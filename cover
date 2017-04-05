@@ -1,0 +1,23 @@
+yocto-compat-layer: various enhancements + bitbake-diffsigs support
+
+I started applying yocto-compat-layer to some real BSP layers and ran
+into some usability issues with the tool.
+
+I also didn't want to do the root cause analysis manually, so I
+automated the dependency analysis and the running of
+bitbake-diffsigs.
+
+This patch series is based on Mark's "yocto-compat-layer.py updates"
+series. The last commit depends on Paul's "bitbake-diffsigs: add an
+option to find and compare specific signatures" patch from
+http://git.yoctoproject.org/cgit/cgit.cgi/poky-contrib/commit/?h=paule/sigstuff&id=5bb69edfb4bbaa7373061daeb4f233a7e2f43a43
+
+Regarding the BSP example that I ended up using: it actually was one
+of the better BSP layers and only had one problem in a "bitbake world"
+build instead of several as in other BSP layers. Nevertheless I
+obscured the name to protect the (not so) guilty in the commit
+messages ;-}
+
+The two changes that show up in test_signatures look harmless at first
+glance, but probably would need to be done differently to avoid a
+false positive when doing the signature check.
