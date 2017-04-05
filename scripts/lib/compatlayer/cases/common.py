@@ -76,4 +76,14 @@ class CommonCompatLayer(OECompatLayerTestCase):
                        (self.tc.layer['name'], len(sig_diff)))
             for diff in sorted(sig_diff_filtered):
                 msg.append('   %s: %s -> %s' % diff)
+                try:
+                    recipe, taskname = diff[0].rsplit(':', 1)
+                    output = check_command('Determining signature difference failed.',
+                                           'bitbake-diffsigs --task %s %s --signature %s %s' %
+                                           (recipe, taskname, diff[1], diff[2])).decode('utf-8')
+                except RuntimeError as error:
+                    output = str(error)
+                if output:
+                    msg.extend(['      ' + line for line in output.splitlines()])
+                    msg.append('')
             self.assertTrue(False, '\n'.join(msg))
