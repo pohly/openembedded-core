@@ -66,12 +66,23 @@ class BSPCompatLayer(OECompatLayerTestCase):
             tasks = tunes[tune]
             for task in sorted(tasks.keys()):
                 signatures = tasks[task]
-                if len(signatures.keys()) > 1:
-                    # Error! Sort signatures by machines, because the hex values don't mean anything.
+                # do_build can be ignored: it is know to have
+                # different signatures in some cases, for example in
+                # the allarch ca-certificates due to RDEPENDS=openssl.
+                # That particular dependency is whitelisted via
+                # SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS, but still shows up
+                # in the sstate signature hash because filtering it
+                # out would be hard and running do_build multiple
+                # times doesn't really matter.
+                if len(signatures.keys()) > 1 and \
+                   not task.endswith(':do_build'):
+                    # Error!
+                    #
+                    # Sort signatures by machines, because the hex values don't mean anything.
                     # => all-arch adwaita-icon-theme:do_build: 1234... (beaglebone, qemux86) != abcdf... (qemux86-64)
                     line = '   %s %s: ' % (tune, task)
-                    line += ' != '.join(['%s (%s)' % (signature, ', '.join([machine for machine in signatures[signature]])) for
-                                         signature in sorted(signatures.keys(), key=lambda signature: signatures[signature])])
+                    line += ' != '.join(['%s (%s)' % (signature, ', '.join([m for m in signatures[signature]])) for
+                                         signature in sorted(signatures.keys(), key=lambda s: signatures[s])])
                     msg.append(line)
         if msg:
             msg.insert(0, 'The machines have conflicting signatures for some shared tasks:')
