@@ -4,6 +4,10 @@ DEPENDS += "gcc-cross-${TARGET_ARCH}"
 
 PN = "go-cross-${TARGET_ARCH}"
 
+# go-cross is built once per target architecture, and thus must not
+# depend on the tune-specific libgcc.
+DEPENDS_remove = "libgcc"
+
 FILESEXTRAPATHS =. "${FILE_DIRNAME}/go-cross:"
 
 GOROOT_FINAL = "${libdir}/go"
