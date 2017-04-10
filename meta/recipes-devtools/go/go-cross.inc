@@ -2,7 +2,7 @@ inherit cross
 
 DEPENDS += "gcc-cross-${TARGET_ARCH}"
 
-PN = "go-cross-${TARGET_ARCH}"
+PN = "go-cross-${TUNE_PKGARCH}"
 
 FILESEXTRAPATHS =. "${FILE_DIRNAME}/go-cross:"
 
