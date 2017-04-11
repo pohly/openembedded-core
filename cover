@@ -23,3 +23,5 @@ V3: - rebased onto master where some yocto-compat-layer enhancements were alread
       on how to run bitbake-diffsigs, end report with one bitbake-diffsigs invocation)
     - allow "bitbake -S none world" to fail during test_machine_signatures,
       report such failures in a separate test_machine_world
+V4: - avoid DEPENDS_remove for go-cross
+    - commit message spelling fixes
