@@ -1,26 +1,25 @@
-[RFC] yocto-compat-layer: various enhancements + bitbake-diffsigs support
+yocto-compat-layer: bitbake-diffsigs support + per machine checks + OE-core fixes
 
-I started applying yocto-compat-layer to some real BSP layers and ran
-into some usability issues with the tool.
-
-I also didn't want to do the root cause analysis manually, so I
-automated the dependency analysis and the running of
-bitbake-diffsigs.
-
-This patch series is based on Mark's "yocto-compat-layer.py updates"
-series. The last commit depends on Paul's "bitbake-diffsigs: add an
-option to find and compare specific signatures" patch from
-http://git.yoctoproject.org/cgit/cgit.cgi/poky-contrib/commit/?h=paule/sigstuff&id=5bb69edfb4bbaa7373061daeb4f233a7e2f43a43
+Manually calling bitbake-diffsigs is cumbersome and doesn't work in a CI
+environment, so now the test itself does it for test_signatures.
 
 Regarding the BSP example that I ended up using: it actually was one
 of the better BSP layers and only had one problem in a "bitbake world"
-build instead of several as in other BSP layers. Nevertheless I
-obscured the name to protect the (not so) guilty in the commit
-messages ;-}
+build instead of several as in other BSP layers.
 
-The two changes that show up in test_signatures look harmless at first
-glance, but probably would need to be done differently to avoid a
-false positive when doing the signature check.
+All pre-requisites in bitbake and OE-core are merged and no further
+work is planned, so this patch series could be merged now after
+reviewing the changes.
+
+The OE-core fixes are included here because they were developed in
+parallel to enhancing the tool which found them. They probably should
+be merged sooner.
 
 V2: - use self.fail() instead of self.assertTrue(False, ...)
     - test_machine_signatures check (work in progress)
+V3: - rebased onto master where some yocto-compat-layer enhancements were already merged
+    - added OE-core fixes for issues found by the per-machine signature comparison
+    - finished test_machine_signatures (shorter output, explanations
+      on how to run bitbake-diffsigs, end report with one bitbake-diffsigs invocation)
+    - allow "bitbake -S none world" to fail during test_machine_signatures,
+      report such failures in a separate test_machine_world
