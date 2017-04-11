@@ -4,6 +4,9 @@ DEPENDS += "gcc-cross-${TARGET_ARCH}"
 
 PN = "go-cross-${TARGET_ARCH}"
 
+# Ignore how TARGET_ARCH is computed.
+TARGET_ARCH[vardepvalue] = "${TARGET_ARCH}"
+
 # go-cross is built once per target architecture, and thus must not
 # depend on the tune-specific libgcc.
 DEPENDS_remove = "libgcc"
