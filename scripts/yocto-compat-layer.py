@@ -151,6 +151,14 @@ def main():
             layers_tested = layers_tested + 1
             continue
 
+        if any(map(lambda additional_layer: not add_layer(bblayersconf, additional_layer, dep_layers, logger),
+                   additional_layers)):
+            logger.info('Skipping %s due to missing additional layers.' % layer['name'])
+            results[layer['name']] = None
+            results_status[layer['name']] = 'SKIPPED (Missing additional layers)'
+            layers_tested = layers_tested + 1
+            continue
+
         logger.info('Getting initial bitbake variables ...')
         td['bbvars'] = get_bb_vars()
         logger.info('Getting initial signatures ...')
@@ -158,9 +166,7 @@ def main():
         td['sigs'], td['tunetasks'] = get_signatures(td['builddir'])
         td['machines'] = args.machines
 
-        if not add_layer(bblayersconf, layer, dep_layers, logger) or \
-           any(map(lambda additional_layer: not add_layer(bblayersconf, additional_layer, dep_layers, logger),
-                   additional_layers)):
+        if not add_layer(bblayersconf, layer, dep_layers, logger):
             logger.info('Skipping %s ???.' % layer['name'])
             results[layer['name']] = None
             results_status[layer['name']] = 'SKIPPED (Unknown)'
