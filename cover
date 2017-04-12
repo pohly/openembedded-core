@@ -1,19 +1,10 @@
-yocto-compat-layer: bitbake-diffsigs support + per machine checks + OE-core fixes
+yocto-compat-layer: per machine checks
 
-Manually calling bitbake-diffsigs is cumbersome and doesn't work in a CI
-environment, so now the test itself does it for test_signatures.
-
-Regarding the BSP example that I ended up using: it actually was one
-of the better BSP layers and only had one problem in a "bitbake world"
-build instead of several as in other BSP layers.
-
-All pre-requisites in bitbake and OE-core are merged and no further
-work is planned, so this patch series could be merged now after
-reviewing the changes.
-
-The OE-core fixes are included here because they were developed in
-parallel to enhancing the tool which found them. They probably should
-be merged sooner.
+It is important to test with real MACHINE values, otherwise changes
+introduced by layers only when their machines are selected wouldn't
+show up. The new test_machine_signatures and test_machine_world tests
+cover two aspects of that (signature differences and world build
+failures).
 
 V2: - use self.fail() instead of self.assertTrue(False, ...)
     - test_machine_signatures check (work in progress)
@@ -25,3 +16,5 @@ V3: - rebased onto master where some yocto-compat-layer enhancements were alread
       report such failures in a separate test_machine_world
 V4: - avoid DEPENDS_remove for go-cross
     - commit message spelling fixes
+V5: - rebased after preceeding patches were merged
+    - generate task list dynamically based on depgraph instead of hard-coding it
