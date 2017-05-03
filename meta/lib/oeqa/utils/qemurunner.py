@@ -98,11 +98,12 @@ class QemuRunner:
                 raise SystemExit
 
     def start(self, qemuparams = None, get_ip = True, extra_bootparams = None, runqemuparams='', launch_cmd=None, discard_writes=True):
+        env = []
         if self.display:
-            os.environ["DISPLAY"] = self.display
+            env.append("DISPLAY=" + self.display)
             # Set this flag so that Qemu doesn't do any grabs as SDL grabs
             # interact badly with screensavers.
-            os.environ["QEMU_DONT_GRAB"] = "1"
+            env.append("QEMU_DONT_GRAB=1")
         if not os.path.exists(self.rootfs):
             logger.error("Invalid rootfs %s" % self.rootfs)
             return False
@@ -110,12 +111,12 @@ class QemuRunner:
             logger.error("Invalid TMPDIR path %s" % self.tmpdir)
             return False
         else:
-            os.environ["OE_TMPDIR"] = self.tmpdir
+            env.append("OE_TMPDIR=" + self.tmpdir)
         if not os.path.exists(self.deploy_dir_image):
             logger.error("Invalid DEPLOY_DIR_IMAGE path %s" % self.deploy_dir_image)
             return False
         else:
-            os.environ["DEPLOY_DIR_IMAGE"] = self.deploy_dir_image
+            env.append("DEPLOY_DIR_IMAGE=" + self.deploy_dir_image)
 
         if not launch_cmd:
             launch_cmd = 'runqemu %s %s ' % ('snapshot' if discard_writes else '', runqemuparams)
@@ -127,6 +128,9 @@ class QemuRunner:
             if not self.display:
                 launch_cmd += ' nographic'
             launch_cmd += ' %s %s' % (self.machine, self.rootfs)
+
+        if env:
+            launch_cmd = 'env %s %s' % (' '.join(env), launch_cmd)
 
         return self.launch(launch_cmd, qemuparams=qemuparams, get_ip=get_ip, extra_bootparams=extra_bootparams)
 
