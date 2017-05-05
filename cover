@@ -1,0 +1,9 @@
+archiver.bbclass enhancements
+
+I just wanted to fix Yocto #11441, but then ran into three other
+issues. So it goes...
+
+I tried whether adding archiver.bbclass after a kernel build leads to
+different source archives, but at least in my experiment it
+didn't. It's still probably better to avoid that, just to be on the
+safe side.
