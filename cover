@@ -1,0 +1,42 @@
+development vs. production builds
+
+At OEDAM [1] I took the AR to flesh out some of my ideas for
+introducing global and per-image settings for switching between
+development and production builds. The goal is partly to establish
+common configure options that then can be used by different layers,
+partly to have some actual useful functionality attached to them
+already in OE-core.
+
+"development" builds are what a developer does when trying out a
+distro or working on his own personal device. "production" is what
+device manufacturer put onto the actual end-user hardware.
+
+At OEDAM we already concluded that per-image settings are more
+useful. However, sometimes a component also has compile-time choices
+that cannot be changed later on in an image, and indeed I found one
+example for that (kmod) in OE-core.
+
+Therefore I have included "debug-build" DISTRO_FEATURES support. It's a
+bit similar to manpages.bbclass, but in contrast to that (currently)
+is meant to be inherited globally - that's partly due to
+misunderstanding how manpages.bbclass was meant to be used. This can
+be changed, for now I just want to demonstrate that such a distro
+feature is not entirely useless, and what effect it could have already
+in OE-core.
+
+In refkit, we also switch globally between development and production
+builds via .inc files. However, I am in the process of replacing that
+with the more flexible per-image IMAGE_MODE check. So from my
+perspective, the IMAGE_MODE is more important and useful than the
+"debug-build" DISTRO_FEATURE.
+
+From a design perspective, the approach taken here is to let a
+developer or image define what mode it wants, and default features can
+be configured accordingly. That alternative would be to continue defining
+features as before and use the mode to configure QA warnings or errors.
+
+But I find that less flexible, and I suspect it would be harder to
+keep track of what is meant to be usable in which mode. Developers
+also would have a harder time overriding the defaults.
+
+[1] https://www.openembedded.org/wiki/OEDAM_2017
