@@ -127,6 +127,17 @@ do_install () {
 	install -m 0644 ${WORKDIR}/nsswitch.conf ${D}${sysconfdir}/nsswitch.conf
 	install -m 0644 ${WORKDIR}/host.conf ${D}${sysconfdir}/host.conf
 	install -m 0644 ${WORKDIR}/motd ${D}${sysconfdir}/motd
+	non_production="${@ ' '.join(set(d.getVar('DISTRO_FEATURES').split()).intersection((d.getVar('DISTRO_FEATURES_NON_PRODUCTION') or '').split()))}"
+	if [ "$non_production" ]; then
+		cat >>${D}${sysconfdir}/motd <<EOF
+******************************************************************
+*** This distro was built using these non-production features: ***
+*** `printf "%-58s" "$non_production"` ***
+*** Do not use this distro and its images in production.       ***
+******************************************************************
+
+EOF
+	fi
 
 	ln -sf /proc/mounts ${D}${sysconfdir}/mtab
 }
