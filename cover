@@ -1,0 +1,8 @@
+yocto-compat-layer.py: various enhancements
+
+While enhancing the layer structure in intel-iot-refkit I ran into
+various cases where enhancements to the tool were
+necessary. intel-iot-refkit now has oe-selftests that check all layers
+using this tool. In addition, the signature checking utility code is
+imported into a custom test that also covers a refkit specific case
+(including refkit-config.inc must not change signatures).
