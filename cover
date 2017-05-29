@@ -12,7 +12,7 @@ must have been such conflicts already before.
 
 Perhaps refkit should have started with LCONF_VERSION as in the
 current OE-core bblayers.conf.sample file to avoid being affected by
-this - too later for that now, though.
+this - too late for that now, though.
 
 Note that I have only checked that the code gets called when placed in
 the expected location, and the code itself was copied verbatim. As it
