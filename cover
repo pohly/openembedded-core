@@ -1,0 +1,21 @@
+bblayers sanity: bblayers.conf.sample specific update code
+
+In an experimental branch of refkit I bumped LCONF_VERSION from 4 to 5
+and ran into the problem mentioned in the commit message: instead of
+raising an error as before, the code (incorrectly) claimed to have
+updated the bblayers.conf file.
+
+I'm not sure how this code was meant to work for different distros
+based on OE-core. Depending on when a distro forked from OE-core and
+how it continued with numbering its bblayers.conf.sample file, there
+must have been such conflicts already before.
+
+Perhaps refkit should have started with LCONF_VERSION as in the
+current OE-core bblayers.conf.sample file to avoid being affected by
+this - too later for that now, though.
+
+Note that I have only checked that the code gets called when placed in
+the expected location, and the code itself was copied verbatim. As it
+refers to ancient changes, I've not actually tried to set up a build
+dir where that upgrade path is necessary. Perhaps the code could even
+be removed entirely?
