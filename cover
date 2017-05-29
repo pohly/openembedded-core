@@ -5,14 +5,19 @@ and ran into the problem mentioned in the commit message: instead of
 raising an error as before, the code (incorrectly) claimed to have
 updated the bblayers.conf file.
 
+Perhaps refkit should have started with LCONF_VERSION as in the
+current OE-core bblayers.conf.sample file to avoid being affected by
+this - too late for that now, though.
+
+As an ugly workaround I'm currently jumping from 4 to 8 directly,
+which produces some extra (and wrong) output about "automatically
+updated" before finally raising the expected error (twice, for some
+reasons).
+
 I'm not sure how this code was meant to work for different distros
 based on OE-core. Depending on when a distro forked from OE-core and
 how it continued with numbering its bblayers.conf.sample file, there
 must have been such conflicts already before.
-
-Perhaps refkit should have started with LCONF_VERSION as in the
-current OE-core bblayers.conf.sample file to avoid being affected by
-this - too late for that now, though.
 
 Note that I have only checked that the code gets called when placed in
 the expected location, and the code itself was copied verbatim. As it
