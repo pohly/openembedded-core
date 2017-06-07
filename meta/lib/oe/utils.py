@@ -126,6 +126,35 @@ def features_backfill(var,d):
     if addfeatures:
         d.appendVar(var, " " + " ".join(addfeatures))
 
+def optional_includes(d, mapping, key_var="DISTRO_FEATURES"):
+    """
+    This can be used to generate a list of files to include depending on
+    the distro features that are selected. key_var contains the features
+    that are set, mapping_var a space-separated set of <feature(s)>:<file(s)>
+    entries. Features and files are separated by comma. Each file on the
+    right-hand side is included in the result once if any of the features one
+    the left-hand side is set.
+
+    Example:
+       require ${@ oe.utils.optional_includes(d, "foo,bar:foo-or-bar.inc xyz:x.inc,y.inc,z.inc")}
+
+    For DISTRO_FEATURES = "foo xyz" that will include four .inc files in the
+    order in which they are listed.
+    """
+    key = set((d.getVar(key_var) or "").split())
+    mapping = mapping.split()
+    includes = []
+    for entry in mapping:
+        parts = entry.split(":", 1)
+        if len(parts) != 2:
+            bb.fatal("%s must contain entries of the form <feature(s)>:<file(s)>, not %s" % (mapping_var, entry))
+        features, files = parts
+        for feature in features.split(","):
+            if feature in key:
+                for file in files.split(","):
+                    if file not in includes:
+                        includes.append(file)
+    return " ".join(includes)
 
 def packages_filter_out_system(d):
     """
