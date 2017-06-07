@@ -1,0 +1,14 @@
+Yocto Compatible 2.0 support code
+
+As discussed in the "[Openembedded-architecture] Yocto Compatible 2.0
++ signature changes" mail thread, changes in a .bbappend cannot be
+done unconditionally. Making _append and _remove depend on overrides
+which get set based on DISTRO_FEATURES is one way of achieving this.
+
+The oe.utils.optional_includes() helper function has not been
+discussed before. It's an attempt to address concerns by developers
+that having to write code for (potentially complex) condition checking
+is error prone and hard to read.
+
+It depends on the bitbake enhancement that allows including multiple
+files at once.
