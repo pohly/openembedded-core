@@ -5,10 +5,11 @@ As discussed in the "[Openembedded-architecture] Yocto Compatible 2.0
 done unconditionally. Making _append and _remove depend on overrides
 which get set based on DISTRO_FEATURES is one way of achieving this.
 
-The oe.utils.optional_includes() helper function has not been
-discussed before. It's an attempt to address concerns by developers
-that having to write code for (potentially complex) condition checking
-is error prone and hard to read.
+Conditional includes can have unexpected results when used with checks
+that still change during parsing. Helper functions might make this a bit
+safer and easier to review by limiting the check to DISTRO_FEATURES.
 
-It depends on the bitbake enhancement that allows including multiple
-files at once.
+Changes in V2:
+  - added df- prefix to distro feature overrides
+  - replaced too complex optional_includes() with simpler
+    all/any_distro_features()
