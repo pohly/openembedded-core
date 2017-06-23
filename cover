@@ -1,0 +1,15 @@
+enhance and test runCmd()
+
+This is mostly motivated by some long-running build tests triggered in
+refkit where better output handling would be very desirable. I had
+this idea already before Leonardo proposed to change the runCmd()
+defaults, but as that's now a hot topic, it seemed like a good time to
+actually implement it.
+
+The result.error encoding fix is something that Leonardo also had in
+his "[OE-core] [PATCH 2/2] selftest/cases: use stderr data when
+querying for errors" patch.
+
+Beware that this patch series conflicts with those patches because
+that same code is changed and because the current default semantic
+(joined stdout/stderr) gets explicitly tested.
