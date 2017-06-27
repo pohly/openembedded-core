@@ -6,3 +6,6 @@ necessary. intel-iot-refkit now has oe-selftests that check all layers
 using this tool. In addition, the signature checking utility code is
 imported into a custom test that also covers a refkit specific case
 (including refkit-config.inc must not change signatures).
+
+Changes in V2:
+- turn signature checking in software layers on/off via command line flags
