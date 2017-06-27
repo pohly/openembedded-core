@@ -13,3 +13,7 @@ querying for errors" patch.
 Beware that this patch series conflicts with those patches because
 that same code is changed and because the current default semantic
 (joined stdout/stderr) gets explicitly tested.
+
+Change in V2:
+- fix race condition between "process has closed stdout/stderr" and
+  "process has terminated" by calling wait() instead of poll()
